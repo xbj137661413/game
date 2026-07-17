@@ -30,47 +30,22 @@ func _ready() -> void:
 
 
 func _build_visual() -> void:
-	# Body
-	body_mesh = MeshInstance3D.new()
-	var cap := CapsuleMesh.new()
-	cap.radius = 0.35
-	cap.height = 1.5
-	body_mesh.mesh = cap
-	body_mesh.position = Vector3(0, 0.9, 0)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.35, 0.18, 0.16)
-	mat.roughness = 0.8
-	body_mesh.material_override = mat
-	add_child(body_mesh)
+	var model := ModelLibrary.instantiate("enemy_bandit", 1.0)
+	if model:
+		add_child(model)
+		body_mesh = _find_mesh(model)
+	else:
+		body_mesh = MeshInstance3D.new()
+		var cap := CapsuleMesh.new()
+		cap.radius = 0.35
+		cap.height = 1.5
+		body_mesh.mesh = cap
+		body_mesh.position = Vector3(0, 0.9, 0)
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.35, 0.18, 0.16)
+		body_mesh.material_override = mat
+		add_child(body_mesh)
 
-	# Head wrap / hat
-	var hat := MeshInstance3D.new()
-	var hat_mesh := CylinderMesh.new()
-	hat_mesh.top_radius = 0.15
-	hat_mesh.bottom_radius = 0.38
-	hat_mesh.height = 0.25
-	hat.mesh = hat_mesh
-	hat.position = Vector3(0, 1.75, 0)
-	var hat_mat := StandardMaterial3D.new()
-	hat_mat.albedo_color = Color(0.15, 0.12, 0.1)
-	hat.material_override = hat_mat
-	add_child(hat)
-
-	# Weapon prop
-	var blade := MeshInstance3D.new()
-	var blade_mesh := BoxMesh.new()
-	blade_mesh.size = Vector3(0.08, 0.08, 0.9)
-	blade.mesh = blade_mesh
-	blade.position = Vector3(0.45, 0.95, -0.25)
-	blade.rotation_degrees = Vector3(0, 20, 15)
-	var bmat := StandardMaterial3D.new()
-	bmat.albedo_color = Color(0.7, 0.72, 0.75)
-	bmat.metallic = 0.7
-	bmat.roughness = 0.3
-	blade.material_override = bmat
-	add_child(blade)
-
-	# Collision
 	var col := CollisionShape3D.new()
 	var shape := CapsuleShape3D.new()
 	shape.radius = 0.4
@@ -79,7 +54,6 @@ func _build_visual() -> void:
 	col.position = Vector3(0, 0.9, 0)
 	add_child(col)
 
-	# Name / hp
 	hp_bar = Label3D.new()
 	hp_bar.text = display_name
 	hp_bar.font_size = 28
@@ -88,6 +62,16 @@ func _build_visual() -> void:
 	hp_bar.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	hp_bar.no_depth_test = true
 	add_child(hp_bar)
+
+
+func _find_mesh(n: Node) -> MeshInstance3D:
+	if n is MeshInstance3D:
+		return n as MeshInstance3D
+	for c in n.get_children():
+		var found := _find_mesh(c)
+		if found:
+			return found
+	return null
 
 
 func _find_player() -> void:
@@ -111,7 +95,7 @@ func _physics_process(delta: float) -> void:
 	if flash_timer > 0.0:
 		flash_timer -= delta
 		if flash_timer <= 0.0 and body_mesh:
-			body_mesh.material_override.albedo_color = Color(0.35, 0.18, 0.16)
+			body_mesh.material_override = null
 
 	if attack_timer > 0.0:
 		attack_timer -= delta
@@ -159,8 +143,13 @@ func take_damage(amount: float, from_pos: Vector3 = Vector3.ZERO) -> void:
 		return
 	health -= amount
 	flash_timer = 0.12
-	if body_mesh and body_mesh.material_override:
-		body_mesh.material_override.albedo_color = Color(0.9, 0.4, 0.35)
+	if body_mesh:
+		if body_mesh.material_override == null:
+			var m := StandardMaterial3D.new()
+			m.albedo_color = Color(0.9, 0.4, 0.35)
+			body_mesh.material_override = m
+		elif body_mesh.material_override is StandardMaterial3D:
+			(body_mesh.material_override as StandardMaterial3D).albedo_color = Color(0.9, 0.4, 0.35)
 	if hp_bar:
 		hp_bar.text = "%s %d/%d" % [display_name, int(maxf(0.0, health)), int(max_health)]
 	if from_pos != Vector3.ZERO:

@@ -27,54 +27,20 @@ func _build_visual() -> void:
 	visual.name = "Visual"
 	add_child(visual)
 
-	var body := MeshInstance3D.new()
-	var cap := CapsuleMesh.new()
-	cap.radius = 0.32
-	cap.height = 1.4
-	body.mesh = cap
-	body.position = Vector3(0, 0.85, 0)
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.55, 0.22, 0.18)
-	mat.roughness = 0.75
-	body.material_override = mat
-	visual.add_child(body)
-
-	var robe := MeshInstance3D.new()
-	var robe_mesh := CylinderMesh.new()
-	robe_mesh.top_radius = 0.28
-	robe_mesh.bottom_radius = 0.45
-	robe_mesh.height = 1.1
-	robe.mesh = robe_mesh
-	robe.position = Vector3(0, 0.7, 0)
-	var rmat := StandardMaterial3D.new()
-	rmat.albedo_color = Color(0.42, 0.12, 0.12)
-	robe.material_override = rmat
-	visual.add_child(robe)
-
-	var hat := MeshInstance3D.new()
-	var hat_mesh := CylinderMesh.new()
-	hat_mesh.top_radius = 0.05
-	hat_mesh.bottom_radius = 0.42
-	hat_mesh.height = 0.2
-	hat.mesh = hat_mesh
-	hat.position = Vector3(0, 1.7, 0)
-	var hmat := StandardMaterial3D.new()
-	hmat.albedo_color = Color(0.12, 0.1, 0.08)
-	hat.material_override = hmat
-	visual.add_child(hat)
-
-	var staff := MeshInstance3D.new()
-	var staff_mesh := CylinderMesh.new()
-	staff_mesh.top_radius = 0.04
-	staff_mesh.bottom_radius = 0.05
-	staff_mesh.height = 1.6
-	staff.mesh = staff_mesh
-	staff.position = Vector3(0.4, 0.9, 0.1)
-	staff.rotation_degrees = Vector3(8, 0, 12)
-	var smat := StandardMaterial3D.new()
-	smat.albedo_color = Color(0.35, 0.22, 0.12)
-	staff.material_override = smat
-	visual.add_child(staff)
+	var model := ModelLibrary.instantiate("npc_elder", 1.0)
+	if model:
+		visual.add_child(model)
+	else:
+		var body := MeshInstance3D.new()
+		var cap := CapsuleMesh.new()
+		cap.radius = 0.32
+		cap.height = 1.4
+		body.mesh = cap
+		body.position = Vector3(0, 0.85, 0)
+		var mat := StandardMaterial3D.new()
+		mat.albedo_color = Color(0.55, 0.22, 0.18)
+		body.material_override = mat
+		visual.add_child(body)
 
 	if not has_node("CollisionShape3D"):
 		var col := CollisionShape3D.new()

@@ -98,46 +98,59 @@ godot --path .
 
 ## 美术与建模工作流
 
-Godot **不负责建模**，常用外部工具：
+Godot **不负责建模**。本项目已用 **Blender 程序化脚本** 生成首批低模 glTF，并接入游戏。
+
+### 本仓库已有模型（Blender 导出）
+
+```
+assets/models/
+├── architecture/
+│   ├── main_hall.glb      # 正殿
+│   ├── pavilion.glb       # 凉亭
+│   ├── gate.glb           # 院门
+│   ├── pillar.glb
+│   ├── wall_segment.glb
+│   └── roof_module.glb
+├── props/
+│   ├── lantern.glb        # 灯笼
+│   ├── stone_lion.glb     # 石狮
+│   ├── stele.glb          # 石碑
+│   ├── tree.glb
+│   ├── scroll.glb / jade.glb
+│   └── sword.glb          # 第一人称武器
+└── characters/
+    ├── npc_elder.glb      # 守院老者
+    └── enemy_bandit.glb   # 匪徒
+```
+
+游戏通过 `scripts/model_library.gd` 加载：有 glb 用模型，没有则回退几何占位。
+
+### 重新生成模型
+
+需安装 [Blender 4+](https://www.blender.org/)（本机可用 5.2）：
+
+```powershell
+& "C:\Program Files\Blender Foundation\Blender 5.2\blender.exe" --background --python tools/blender_build_models.py
+```
+
+脚本：`tools/blender_build_models.py`  
+修改脚本后重跑即可覆盖 `assets/models/**/*.glb`。
+
+### 手工商模流程
 
 | 工具 | 用途 |
 |------|------|
-| [Blender](https://www.blender.org/) | 主推：建模、UV、贴图、动画 |
-| [Blockbench](https://www.blockbench.net/) | 低多边形 / 简单角色 |
-| MagicaVoxel 等 | 体素风格 |
+| Blender | 主推：建模、UV、贴图、动画 |
+| Blockbench | 低多边形 / 简单角色 |
 
-### 推荐导出格式
-
-- **glTF 2.0**：`.glb`（优先）或 `.gltf`
-- 也可用 `.fbx`、`.obj`，但 glTF 与 Godot 兼容性最好
-
-### 推荐流程
-
-1. 在 Blender 中制作建筑件 / 角色 / 道具  
-2. 导出为 **glTF Binary（.glb）**  
-3. 将文件放入 `assets/models/`  
-4. 在 Godot 中拖入场景，或用脚本 `load("res://assets/models/xxx.glb")`  
-5. 逐步替换 `world_builder.gd` 中的占位几何体  
+1. Blender 制作 → 导出 **glTF Binary（.glb）**  
+2. 放入对应 `assets/models/...` 路径（与 `ModelLibrary.PATHS` 一致）  
+3. Godot 重新导入后自动使用  
 
 ### 免费素材参考
 
-- [Kenney](https://kenney.nl) — 大量 CC0 低模  
-- OpenGameArt、itch.io（注意授权）  
-- Sketchfab（筛选可商用 / CC 许可）  
-
-### 资源约定（本项目）
-
-```
-assets/
-├── models/          # .glb 模型
-│   ├── architecture/
-│   ├── props/
-│   └── characters/
-├── textures/        # 贴图
-└── audio/           # 音效 / BGM
-```
-
-导入后 Godot 会生成 `.import` 元数据；该文件已加入 `.gitignore` 策略时请以仓库实际配置为准。团队协作时通常**提交** `.import` 以便导入设置一致；本仓库默认忽略部分导入缓存，以 `.gitignore` 为准。
+- [Kenney](https://kenney.nl) — CC0 低模  
+- OpenGameArt、itch.io（注意授权）
 
 ---
 

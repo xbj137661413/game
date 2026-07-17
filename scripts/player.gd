@@ -29,10 +29,25 @@ func _ready() -> void:
 	floor_snap_length = 0.3
 	camera.current = true
 	ray.target_position = Vector3(0, 0, -3.2)
-	# 延迟一帧再锁鼠标，避免启动时焦点丢失
+	_try_load_sword_model()
 	call_deferred("_capture_mouse")
 	if GameState:
 		GameState.set_health(GameState.MAX_HEALTH)
+
+
+func _try_load_sword_model() -> void:
+	if weapon == null:
+		return
+	var model := ModelLibrary.instantiate("sword", 0.9)
+	if model == null:
+		return
+	for child in weapon.get_children():
+		child.visible = false
+	model.name = "SwordModel"
+	# Blender sword points +Y; FPS wants -Z forward-ish in camera space
+	model.rotation_degrees = Vector3(90, 0, 0)
+	model.position = Vector3(0, 0, -0.1)
+	weapon.add_child(model)
 
 
 func _capture_mouse() -> void:
