@@ -1,0 +1,94 @@
+[gd_scene load_steps=10 format=3 uid="uid://player001"]
+
+[ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_body"]
+radius = 0.35
+height = 1.7
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.35
+height = 1.7
+
+[sub_resource type="BoxMesh" id="BoxMesh_blade"]
+size = Vector3(0.05, 0.07, 0.95)
+
+[sub_resource type="StandardMaterial3D" id="Mat_blade"]
+albedo_color = Color(0.82, 0.84, 0.88, 1)
+metallic = 0.8
+roughness = 0.22
+
+[sub_resource type="CylinderMesh" id="Cyl_handle"]
+top_radius = 0.03
+bottom_radius = 0.035
+height = 0.28
+
+[sub_resource type="StandardMaterial3D" id="Mat_handle"]
+albedo_color = Color(0.28, 0.16, 0.08, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_guard"]
+size = Vector3(0.18, 0.04, 0.06)
+
+[sub_resource type="StandardMaterial3D" id="Mat_guard"]
+albedo_color = Color(0.75, 0.6, 0.2, 1)
+metallic = 0.7
+roughness = 0.35
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 2
+collision_mask = 1
+floor_snap_length = 0.2
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("CapsuleShape3D_body")
+
+[node name="BodyMesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+visible = false
+mesh = SubResource("CapsuleMesh_body")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.55, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+current = true
+fov = 75.0
+near = 0.05
+far = 200.0
+
+[node name="InteractRay" type="RayCast3D" parent="Head/Camera3D"]
+target_position = Vector3(0, 0, -3.2)
+collision_mask = 5
+collide_with_areas = false
+collide_with_bodies = true
+
+[node name="AttackRay" type="RayCast3D" parent="Head/Camera3D"]
+target_position = Vector3(0, 0, -2.6)
+collision_mask = 8
+collide_with_areas = false
+collide_with_bodies = true
+
+[node name="Weapon" type="Node3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, -0.32, -0.48)
+
+[node name="Handle" type="MeshInstance3D" parent="Head/Camera3D/Weapon"]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0, 0.38)
+mesh = SubResource("Cyl_handle")
+surface_material_override/0 = SubResource("Mat_handle")
+
+[node name="Blade" type="MeshInstance3D" parent="Head/Camera3D/Weapon"]
+transform = Transform3D(0.98, 0, 0.2, 0, 1, 0, -0.2, 0, 0.98, 0, 0, -0.12)
+mesh = SubResource("BoxMesh_blade")
+surface_material_override/0 = SubResource("Mat_blade")
+
+[node name="Guard" type="MeshInstance3D" parent="Head/Camera3D/Weapon"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.28)
+mesh = SubResource("BoxMesh_guard")
+surface_material_override/0 = SubResource("Mat_guard")
+
+[node name="Footsteps" type="AudioStreamPlayer3D" parent="."]
+volume_db = -8.0
+max_distance = 12.0

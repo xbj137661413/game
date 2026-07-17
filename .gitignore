@@ -1,0 +1,38 @@
+# Godot 4
+.godot/
+*.translation
+export.cfg
+export_presets.cfg
+.mono/
+data_*/
+android/
+
+# Optional local import noise (keep intentional .import if you need shared settings)
+# *.import
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+*.tmp
+
+# Exports / build output
+builds/
+dist/
+export/
+*.exe
+*.pck
+*.zip
+*.app
+*.x86_64
+*.dmg
+
+# Logs
+*.log

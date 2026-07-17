@@ -1,0 +1,335 @@
+[gd_scene load_steps=12 format=3 uid="uid://main001"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" uid="uid://player001" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/world_builder.gd" id="3_world"]
+[ext_resource type="Script" path="res://scripts/hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scripts/dialogue_ui.gd" id="5_dialogue"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.55, 0.62, 0.7, 1)
+ambient_light_source = 1
+ambient_light_color = Color(0.78, 0.72, 0.64, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+ssao_enabled = true
+ssao_radius = 1.2
+ssao_intensity = 1.5
+glow_enabled = true
+glow_intensity = 0.4
+fog_enabled = true
+fog_light_color = Color(0.7, 0.74, 0.78, 1)
+fog_density = 0.014
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.1, 0.08, 0.06, 0.72)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.62, 0.22, 0.55)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_msg"]
+bg_color = Color(0.08, 0.06, 0.04, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.78, 0.62, 0.22, 0.65)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.12, 0.08, 0.08, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.55, 0.2, 0.15, 0.8)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.72, 0.18, 0.16, 0.95)
+corner_radius_top_left = 2
+corner_radius_top_right = 2
+corner_radius_bottom_right = 2
+corner_radius_bottom_left = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dialog"]
+bg_color = Color(0.08, 0.06, 0.04, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.78, 0.62, 0.22, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+content_margin_left = 20.0
+content_margin_top = 16.0
+content_margin_right = 20.0
+content_margin_bottom = 16.0
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_main")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 8, 18, 10)
+light_color = Color(1, 0.9, 0.75, 1)
+light_energy = 1.2
+shadow_enabled = false
+directional_shadow_mode = 0
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.707107, -0.353553, -0.612372, 0, 0.866025, -0.5, 0.707107, -0.353553, -0.612372, -6, 10, -4)
+light_color = Color(0.5, 0.6, 0.78, 1)
+light_energy = 0.28
+shadow_enabled = false
+
+[node name="World" type="Node3D" parent="."]
+script = ExtResource("3_world")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 12)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("4_hud")
+
+[node name="DamageVignette" type="ColorRect" parent="HUD"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.7, 0.05, 0.05, 1)
+modulate = Color(1, 1, 1, 0)
+
+[node name="DeathOverlay" type="ColorRect" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.02, 0.02, 0.55)
+
+[node name="DeathText" type="Label" parent="HUD/DeathOverlay"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.95, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "力竭倒地 — 按 R 重生"
+
+[node name="Crosshair" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="H" type="ColorRect" parent="HUD/Crosshair"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 7.0
+offset_right = 14.0
+offset_bottom = 9.0
+color = Color(0.95, 0.9, 0.75, 0.85)
+
+[node name="V" type="ColorRect" parent="HUD/Crosshair"]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 2.0
+offset_right = 9.0
+offset_bottom = 14.0
+color = Color(0.95, 0.9, 0.75, 0.85)
+
+[node name="HealthBar" type="ProgressBar" parent="HUD"]
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 260.0
+offset_bottom = 42.0
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="HealthText" type="Label" parent="HUD"]
+offset_left = 28.0
+offset_top = 20.0
+offset_right = 256.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.98, 0.92, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "气血 100/100"
+
+[node name="CollectCount" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 50.0
+offset_right = 220.0
+offset_bottom = 82.0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_panel")
+text = "行囊：0"
+
+[node name="QuestTracker" type="Label" parent="HUD"]
+offset_left = 24.0
+offset_top = 96.0
+offset_right = 320.0
+offset_bottom = 220.0
+theme_override_colors/font_color = Color(0.92, 0.86, 0.72, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_panel")
+text = "当前无任务"
+autowrap_mode = 3
+
+[node name="Prompt" type="Label" parent="HUD"]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -130.0
+offset_right = 220.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.95, 0.9, 0.75, 1)
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+vertical_alignment = 1
+text = ""
+
+[node name="Message" type="Label" parent="HUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -280.0
+offset_top = 48.0
+offset_right = 280.0
+offset_bottom = 100.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.98, 0.94, 0.82, 1)
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_msg")
+horizontal_alignment = 1
+vertical_alignment = 1
+text = ""
+
+[node name="Help" type="Label" parent="HUD"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -340.0
+offset_top = -100.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.85, 0.8, 0.7, 0.7)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+text = "WASD 移动 | 鼠标视角 | Shift 奔跑
+空格 跳跃 | 左键 挥剑 | E 交互
+Esc 鼠标 | R 重生"
+
+[node name="DialogueUI" type="CanvasLayer" parent="."]
+layer = 20
+visible = false
+script = ExtResource("5_dialogue")
+
+[node name="Panel" type="PanelContainer" parent="DialogueUI"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -420.0
+offset_top = -220.0
+offset_right = 420.0
+offset_bottom = -36.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dialog")
+
+[node name="Margin" type="MarginContainer" parent="DialogueUI/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 4
+
+[node name="VBox" type="VBoxContainer" parent="DialogueUI/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Speaker" type="Label" parent="DialogueUI/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.72, 0.28, 1)
+theme_override_font_sizes/font_size = 22
+text = "说话人"
+
+[node name="Body" type="Label" parent="DialogueUI/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.9, 0.8, 1)
+theme_override_font_sizes/font_size = 18
+text = "对话内容"
+autowrap_mode = 3
+
+[node name="Hint" type="Label" parent="DialogueUI/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.65, 0.55, 0.85)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 2
+text = "空格 / E 继续"
